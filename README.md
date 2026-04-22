@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CyberShield AI 🛡️
 
 > **Production-Grade AI-Powered Cybersecurity Platform**
@@ -321,3 +322,6 @@ For issues, questions, or feedback:
 ---
 
 **Made with ❤️ for cybersecurity professionals**
+=======
+# cybershield-ai
+>>>>>>> b40a732630b821d37a6f159fc9ad069085abcf2c

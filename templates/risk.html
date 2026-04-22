@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Cyber Risk Dashboard</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<h2>CyberShield AI</h2>
+
+<ul>
+<li><a href="/">Dashboard</a></li>
+<li><a href="/password">Password Analyzer</a></li>
+<li><a href="/website">Website Scanner</a></li>
+<li><a href="/phishing">Phishing Detector</a></li>
+<li><a href="/domain">Domain Detector</a></li>
+<li><a href="/breach">Breach Checker</a></li>
+<li><a href="/risk">Risk Dashboard</a></li>
+</ul>
+
+</div>
+
+
+
+<div class="main">
+
+<div class="topbar">
+
+<h1>Cyber Risk Dashboard</h1>
+<p>Monitor overall cybersecurity risk indicators</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>Overall Cyber Risk Score</h3>
+
+<div class="risk-circle">
+65
+</div>
+
+<p class="risk-text">Moderate Risk</p>
+
+<br>
+
+<button onclick="calculateRisk()">
+Recalculate Risk
+</button>
+
+<p id="result"></p>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>Security Indicators</h3>
+
+<ul>
+<li>Password Strength Status</li>
+<li>Phishing Detection Alerts</li>
+<li>Website Risk Analysis</li>
+<li>Suspicious Domain Monitoring</li>
+</ul>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>Security Recommendations</h3>
+
+<ul>
+<li>Use strong unique passwords</li>
+<li>Enable multi-factor authentication</li>
+<li>Be cautious with unknown links</li>
+<li>Regularly update software</li>
+</ul>
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+function calculateRisk(){
+
+fetch("/calculate_risk",{
+method:"POST"
+})
+
+.then(response => response.json())
+.then(data =>{
+document.getElementById("result").innerText =
+"Overall Risk Score: " + data.score + " | " + data.level;
+})
+
+}
+
+</script>
+
+</body>
+
+</html>

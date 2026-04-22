@@ -1,0 +1,284 @@
+[
+    {
+        "area":  "Auth",
+        "test":  "Login with correct credentials",
+        "status":  "PASS",
+        "details":  "Token issued"
+    },
+    {
+        "area":  "Auth",
+        "test":  "Wrong password returns error",
+        "status":  "PASS",
+        "details":  "Rejected"
+    },
+    {
+        "area":  "Auth",
+        "test":  "Invalid token rejected",
+        "status":  "PASS",
+        "details":  "Rejected"
+    },
+    {
+        "area":  "Password Analyzer",
+        "test":  "Weak password classification",
+        "status":  "PASS",
+        "details":  "strength=Very Weak"
+    },
+    {
+        "area":  "Password Analyzer",
+        "test":  "Strong password classification",
+        "status":  "PASS",
+        "details":  "strength=Very Strong"
+    },
+    {
+        "area":  "Password Analyzer",
+        "test":  "Empty input shows error",
+        "status":  "PASS",
+        "details":  "{\n  \"error\": \"Password required\"\n}\n"
+    },
+    {
+        "area":  "Password Analyzer",
+        "test":  "Very long password (100+ chars)",
+        "status":  "PASS",
+        "details":  "len=123"
+    },
+    {
+        "area":  "Password Analyzer",
+        "test":  "Only numbers =\u003e weak",
+        "status":  "PASS",
+        "details":  "strength=Very Weak"
+    },
+    {
+        "area":  "Website Scanner",
+        "test":  "Valid URL scan starts",
+        "status":  "PASS",
+        "details":  "risk=Medium"
+    },
+    {
+        "area":  "Website Scanner",
+        "test":  "HTTPS/SSL results shown",
+        "status":  "PASS",
+        "details":  "https+ssl fields"
+    },
+    {
+        "area":  "Website Scanner",
+        "test":  "Open ports detection",
+        "status":  "FAIL",
+        "details":  "Not implemented in backend response model"
+    },
+    {
+        "area":  "Website Scanner",
+        "test":  "Invalid URL handled",
+        "status":  "PASS",
+        "details":  "scannable=True"
+    },
+    {
+        "area":  "Website Scanner",
+        "test":  "Timeout website handled",
+        "status":  "PASS",
+        "details":  "risk=Medium"
+    },
+    {
+        "area":  "Website Scanner",
+        "test":  "Redirect website handled",
+        "status":  "PASS",
+        "details":  "scannable=True"
+    },
+    {
+        "area":  "Website Scanner Security",
+        "test":  "SSRF prevention for localhost",
+        "status":  "FAIL",
+        "details":  "localhost scanning allowed =\u003e SSRF risk"
+    },
+    {
+        "area":  "Phishing Detector",
+        "test":  "Phishing URL flagged malicious",
+        "status":  "PASS",
+        "details":  "confidence=96.0"
+    },
+    {
+        "area":  "Phishing Detector",
+        "test":  "Safe URL marked safe",
+        "status":  "FAIL",
+        "details":  "confidence=69.0"
+    },
+    {
+        "area":  "Phishing Detector",
+        "test":  "Shortened URL handled",
+        "status":  "PASS",
+        "details":  "endpoint handled"
+    },
+    {
+        "area":  "Phishing Detector",
+        "test":  "International domain handled",
+        "status":  "PASS",
+        "details":  "endpoint handled"
+    },
+    {
+        "area":  "Domain Intelligence",
+        "test":  "Domain lookup works",
+        "status":  "PASS",
+        "details":  "domain=github.com"
+    },
+    {
+        "area":  "Domain Intelligence",
+        "test":  "WHOIS registration/expiry/owner details complete",
+        "status":  "FAIL",
+        "details":  "API returns only limited age info; owner/expiry missing"
+    },
+    {
+        "area":  "Domain Intelligence",
+        "test":  "Invalid domain error handling",
+        "status":  "PASS",
+        "details":  "handled without server crash"
+    },
+    {
+        "area":  "Breach Checker",
+        "test":  "Email breach check works",
+        "status":  "PASS",
+        "details":  "count=3"
+    },
+    {
+        "area":  "Breach Checker",
+        "test":  "Breach name/date/data leaked fields complete",
+        "status":  "FAIL",
+        "details":  "date/data_leaked fields not implemented"
+    },
+    {
+        "area":  "Breach Checker",
+        "test":  "Invalid email format rejected",
+        "status":  "FAIL",
+        "details":  "accepted invalid email"
+    },
+    {
+        "area":  "Breach Checker",
+        "test":  "No breach case shown",
+        "status":  "FAIL",
+        "details":  "breached=True"
+    },
+    {
+        "area":  "IP Analyzer",
+        "test":  "IP shows location/ISP/risk",
+        "status":  "PASS",
+        "details":  "fields check"
+    },
+    {
+        "area":  "IP Analyzer",
+        "test":  "Invalid IP rejected",
+        "status":  "PASS",
+        "details":  "Invalid IP address format"
+    },
+    {
+        "area":  "IP Analyzer",
+        "test":  "Private IP detected explicitly",
+        "status":  "FAIL",
+        "details":  "no private-ip boolean in model"
+    },
+    {
+        "area":  "Email Analyzer",
+        "test":  "Spam/phishing suspicious sender detection",
+        "status":  "PASS",
+        "details":  "risk=High"
+    },
+    {
+        "area":  "Email Analyzer",
+        "test":  "Empty email rejected",
+        "status":  "PASS",
+        "details":  "validation"
+    },
+    {
+        "area":  "Email Analyzer",
+        "test":  "Malformed email handled",
+        "status":  "PASS",
+        "details":  "returns error payload"
+    },
+    {
+        "area":  "Risk Dashboard",
+        "test":  "Risk score generated",
+        "status":  "PASS",
+        "details":  "score=59"
+    },
+    {
+        "area":  "Risk Dashboard",
+        "test":  "No data empty state support",
+        "status":  "PASS",
+        "details":  "API returns default score"
+    },
+    {
+        "area":  "Scan History",
+        "test":  "Save and display scans",
+        "status":  "PASS",
+        "details":  "total=23"
+    },
+    {
+        "area":  "Scan History",
+        "test":  "Filter by type works",
+        "status":  "PASS",
+        "details":  "API filter working"
+    },
+    {
+        "area":  "Scan History",
+        "test":  "Search support exists",
+        "status":  "FAIL",
+        "details":  "No search endpoint or UI search input"
+    },
+    {
+        "area":  "Scan History Security",
+        "test":  "Only logged in user sees own data",
+        "status":  "PASS",
+        "details":  "user2_total=0"
+    },
+    {
+        "area":  "Dashboard",
+        "test":  "Real-time stats update after scans",
+        "status":  "PASS",
+        "details":  "before=0 after=23"
+    },
+    {
+        "area":  "Performance",
+        "test":  "Dashboard load API \u003c3s",
+        "status":  "PASS",
+        "details":  "ms=5"
+    },
+    {
+        "area":  "Performance",
+        "test":  "API avg response under 2s (20 calls)",
+        "status":  "PASS",
+        "details":  "avg_ms=9"
+    },
+    {
+        "area":  "Security",
+        "test":  "SQL Injection login attempt blocked",
+        "status":  "PASS",
+        "details":  "login did not bypass"
+    },
+    {
+        "area":  "Security",
+        "test":  "XSS payload does not crash backend",
+        "status":  "PASS",
+        "details":  "backend stable"
+    },
+    {
+        "area":  "Security",
+        "test":  "Protected routes reject unauthenticated requests",
+        "status":  "PASS",
+        "details":  "auth enforced"
+    },
+    {
+        "area":  "Password Security",
+        "test":  "Password target masked in DB",
+        "status":  "FAIL",
+        "details":  "target="
+    },
+    {
+        "area":  "Password Security",
+        "test":  "No raw tested password in password-scan result JSON",
+        "status":  "FAIL",
+        "details":  null
+    },
+    {
+        "area":  "Breach Security",
+        "test":  "Do not store emails in DB",
+        "status":  "PASS",
+        "details":  "stored_email_targets="
+    }
+]

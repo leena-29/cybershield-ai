@@ -1,0 +1,27 @@
+# Backend
+backend/.env
+backend/__pycache__/
+backend/*.db
+backend/*.py[cod]
+backend/.Python
+backend/venv/
+backend/.venv
+backend/env/
+
+# Frontend
+frontend/node_modules/
+frontend/build/
+frontend/.env.local
+frontend/.env.*.local
+
+# General
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.swp
+.env
+.env.local
+cybershield.db
+phishing_model.pkl
+phishing_scaler.pkl

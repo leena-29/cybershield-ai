@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Password Breach Checker</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<h2>CyberShield AI</h2>
+
+<ul>
+<li><a href="/">Dashboard</a></li>
+<li><a href="/password">Password Analyzer</a></li>
+<li><a href="/website">Website Scanner</a></li>
+<li><a href="/phishing">Phishing Detector</a></li>
+<li><a href="/domain">Domain Detector</a></li>
+<li><a href="/breach">Breach Checker</a></li>
+<li><a href="/risk">Risk Dashboard</a></li>
+</ul>
+
+</div>
+
+
+
+<div class="main">
+
+<div class="topbar">
+
+<h1>Password Breach Checker</h1>
+<p>Check if your password appears in known data breaches</p>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>Check Password</h3>
+
+<input type="password" id="password" placeholder="Enter password">
+
+<br><br>
+
+<button onclick="checkBreach()">
+Check Breach
+</button>
+
+<p id="result"></p>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>Common Leaked Passwords</h3>
+
+<ul>
+<li>123456</li>
+<li>password</li>
+<li>12345678</li>
+<li>qwerty</li>
+<li>admin</li>
+</ul>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>Password Safety Tips</h3>
+
+<ul>
+<li>Never reuse passwords</li>
+<li>Use long passwords (12+ characters)</li>
+<li>Enable two-factor authentication</li>
+<li>Use password managers</li>
+</ul>
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+function checkBreach(){
+
+let password = document.getElementById("password").value;
+
+fetch("/check_breach",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body: JSON.stringify({password:password})
+})
+
+.then(response => response.json())
+.then(data =>{
+document.getElementById("result").innerText =
+"Result: " + data.result;
+})
+
+}
+
+</script>
+
+</body>
+
+</html>

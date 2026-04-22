@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Phishing Detector Pro</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+height:100vh;
+background:linear-gradient(rgba(5,10,25,0.9),rgba(5,10,25,0.95)),
+url("https://images.unsplash.com/photo-1518770660439-4636190af475");
+background-size:cover;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+}
+
+.card{
+width:520px;
+padding:25px;
+border-radius:20px;
+background: rgba(255,255,255,0.08);
+backdrop-filter: blur(20px);
+border:1px solid rgba(255,255,255,0.15);
+text-align:center;
+position:relative;
+}
+
+.back{
+position:absolute;
+top:20px;
+left:20px;
+cursor:pointer;
+font-size:20px;
+}
+
+textarea{
+width:100%;
+height:110px;
+padding:10px;
+border-radius:10px;
+border:none;
+margin-top:10px;
+background:#e5e7eb;
+}
+
+button{
+margin-top:10px;
+padding:10px;
+width:100%;
+border:none;
+border-radius:10px;
+background:linear-gradient(45deg,#3b82f6,#06b6d4);
+color:white;
+cursor:pointer;
+}
+
+.circle{
+width:110px;
+height:110px;
+border-radius:50%;
+margin:15px auto;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+background: conic-gradient(#1e293b 100%, #1e293b 0%);
+}
+
+.tabs{
+display:flex;
+justify-content:space-around;
+margin-top:10px;
+}
+
+.tab{
+cursor:pointer;
+padding:5px 10px;
+font-size:14px;
+opacity:0.6;
+}
+
+.tab.active{
+border-bottom:2px solid #3b82f6;
+opacity:1;
+}
+
+.content{
+display:none;
+margin-top:10px;
+text-align:left;
+font-size:13px;
+}
+
+.content.active{
+display:block;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="back" onclick="history.back()">←</div>
+
+<h2>Phishing Detector Pro</h2>
+
+<textarea id="msg" placeholder="Paste suspicious message..."></textarea>
+
+<button onclick="analyze()">Analyze</button>
+
+<div class="circle" id="circle">0%</div>
+
+<div id="result"></div>
+<div id="risk"></div>
+<div id="category"></div>
+
+<div class="tabs">
+<div class="tab active" onclick="showTab(0)">Summary</div>
+<div class="tab" onclick="showTab(1)">Details</div>
+<div class="tab" onclick="showTab(2)">Advice</div>
+</div>
+
+<div class="content active" id="tab0"></div>
+<div class="content" id="tab1"></div>
+<div class="content" id="tab2"></div>
+
+</div>
+
+<script>
+
+const keywords = ["urgent","verify","account","bank","password","otp","click","login","suspend","limited","update"];
+
+function showTab(i){
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
+document.querySelectorAll(".tab")[i].classList.add("active");
+document.querySelectorAll(".content")[i].classList.add("active");
+}
+
+function analyze(){
+
+let text = document.getElementById("msg").value.trim().toLowerCase();
+
+if(text === ""){
+setError("Please enter a message");
+return;
+}
+
+let score = 100;
+let issues = [];
+
+/* KEYWORDS */
+keywords.forEach(k=>{
+if(text.includes(k)){
+score -= 7;
+issues.push(k);
+}
+});
+
+/* LINK */
+if(/http|bit\.ly|www\./.test(text)){
+score -= 20;
+issues.push("suspicious link");
+}
+
+/* MONEY SCAM */
+if(/win|prize|reward|gift/.test(text)){
+score -= 15;
+issues.push("scam words");
+}
+
+/* GENERIC GREETING */
+if(/dear user|dear customer/.test(text)){
+score -= 10;
+issues.push("generic greeting");
+}
+
+/* ===================== */
+/* GIBBERISH DETECTION */
+/* ===================== */
+
+let total = text.length;
+let letters = (text.match(/[a-z]/g)||[]).length;
+let numbers = (text.match(/[0-9]/g)||[]).length;
+let symbols = (text.match(/[^a-z0-9\s]/g)||[]).length;
+
+let words = text.split(/\s+/);
+let readable = words.filter(w=>/^[a-z]{3,}$/.test(w)).length;
+
+/* RULES */
+if((numbers + symbols) > total * 0.35){
+score -= 25;
+issues.push("encoded content");
+}
+
+if(readable < words.length * 0.4){
+score -= 20;
+issues.push("low readability");
+}
+
+if(words.filter(w=>w.length>12).length > 1){
+score -= 15;
+issues.push("long random tokens");
+}
+
+/* FINAL LIMIT */
+if(score < 0) score = 0;
+
+/* RESULT CLASS */
+let result, risk, color;
+
+if(score >= 85){
+result = "Safe";
+risk = "Low Risk";
+color = "lime";
+}
+else if(score >= 60){
+result = "Suspicious";
+risk = "Medium Risk";
+color = "orange";
+}
+else{
+result = "Phishing";
+risk = "High Risk";
+color = "red";
+}
+
+/* CATEGORY */
+let category = "General";
+if(text.includes("bank")) category = "Banking Scam";
+if(text.includes("otp")) category = "OTP Scam";
+if(issues.includes("encoded content")) category = "Obfuscated Attack";
+
+/* UI UPDATE */
+document.getElementById("circle").innerHTML = score + "%";
+document.getElementById("circle").style.background =
+`conic-gradient(${color} ${score}%, #1e293b ${score}%)`;
+
+document.getElementById("result").innerHTML = result + " ("+score+"/100)";
+document.getElementById("risk").innerHTML = risk;
+document.getElementById("category").innerHTML = "Category: " + category;
+
+/* SUMMARY */
+let summary = "Detected issues: " + issues.length + "<br><br>";
+
+if(issues.length){
+issues.slice(0,3).forEach(i=>{
+summary += "• " + i + "<br>";
+});
+}else{
+summary += "✔ No major issues";
+}
+
+document.getElementById("tab0").innerHTML = summary;
+
+/* DETAILS */
+document.getElementById("tab1").innerHTML = issues.length ? issues.join("<br>") : "No suspicious patterns";
+
+/* ADVICE */
+document.getElementById("tab2").innerHTML =
+"• Do not click unknown links<br>• Never share OTP/password<br>• Verify sender before action";
+
+}
+
+/* ERROR */
+function setError(msg){
+document.getElementById("result").innerHTML = "⚠ " + msg;
+document.getElementById("circle").innerHTML = "0%";
+document.getElementById("circle").style.background =
+"conic-gradient(#1e293b 100%, #1e293b 0%)";
+document.getElementById("tab0").innerHTML = "";
+document.getElementById("tab1").innerHTML = "";
+document.getElementById("tab2").innerHTML = "";
+}
+
+</script>
+
+</body>
+</html>

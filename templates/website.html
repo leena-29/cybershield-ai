@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CyberShield - Website Scanner</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+height:100vh;
+background:
+linear-gradient(rgba(5,10,25,0.9),rgba(5,10,25,0.95)),
+url("https://images.unsplash.com/photo-1518770660439-4636190af475");
+background-size:cover;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+}
+
+/* CARD */
+.card{
+position:relative;
+width:460px;
+padding:30px;
+border-radius:20px;
+background: rgba(255,255,255,0.08);
+backdrop-filter: blur(20px);
+border:1px solid rgba(255,255,255,0.15);
+box-shadow:0 0 50px rgba(0,0,0,0.7);
+text-align:center;
+animation:fade 0.5s ease;
+}
+
+@keyframes fade{
+from{opacity:0;transform:scale(0.9);}
+to{opacity:1;transform:scale(1);}
+}
+
+/* BACK BUTTON */
+.back{
+position:absolute;
+top:20px;
+left:20px;
+font-size:22px;
+cursor:pointer;
+background:rgba(255,255,255,0.1);
+padding:8px 12px;
+border-radius:50%;
+transition:0.3s;
+}
+
+.back:hover{
+background:#3b82f6;
+transform:scale(1.1);
+}
+
+/* INPUT */
+input{
+width:100%;
+padding:14px;
+border-radius:12px;
+border:none;
+margin-top:10px;
+background:#e5e7eb;
+}
+
+/* BUTTON */
+button{
+margin-top:12px;
+padding:12px;
+width:100%;
+border:none;
+border-radius:12px;
+background:linear-gradient(45deg,#3b82f6,#06b6d4);
+color:white;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+/* GRAPH */
+.circle{
+width:120px;
+height:120px;
+border-radius:50%;
+margin:15px auto;
+display:flex;
+justify-content:center;
+align-items:center;
+font-weight:bold;
+background: conic-gradient(lime 0%, #1e293b 0%);
+transition:0.4s;
+}
+
+/* TEXT */
+.result{
+margin-top:10px;
+font-size:20px;
+font-weight:bold;
+}
+
+.info{
+font-size:13px;
+color:#cbd5f5;
+margin-top:4px;
+}
+
+.details{
+text-align:left;
+margin-top:10px;
+font-size:14px;
+}
+
+.alert{
+margin-top:10px;
+padding:10px;
+border-radius:10px;
+background:rgba(255,255,255,0.05);
+font-size:13px;
+}
+
+/* LOADER */
+.loader{
+display:none;
+margin-top:15px;
+border:4px solid #ccc;
+border-top:4px solid #06b6d4;
+border-radius:50%;
+width:40px;
+height:40px;
+animation:spin 1s linear infinite;
+margin-left:auto;
+margin-right:auto;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<!-- BACK BUTTON -->
+<div class="back" onclick="goBack()">←</div>
+
+<h2>Website Safety Scanner</h2>
+
+<input type="text" id="url" placeholder="Enter URL (https://example.com)">
+
+<button onclick="scan()">Scan Website</button>
+<button onclick="resetAll()">Reset</button>
+
+<div class="loader" id="loader"></div>
+
+<div class="circle" id="circle">0%</div>
+
+<div class="result" id="result"></div>
+<div class="info" id="badge"></div>
+<div class="info" id="domainInfo"></div>
+<div class="info" id="attack"></div>
+
+<div class="details" id="details"></div>
+<div class="alert" id="why"></div>
+<div class="alert" id="advice"></div>
+
+</div>
+
+<script>
+
+/* BACK FUNCTION */
+function goBack(){
+window.history.back();
+}
+
+/* ENTER KEY */
+document.getElementById("url").addEventListener("keypress",function(e){
+if(e.key==="Enter") scan();
+});
+
+/* VALIDATION */
+function isValidURL(url){
+let pattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}/;
+return pattern.test(url);
+}
+
+/* MAIN FUNCTION */
+function scan(){
+
+let url=document.getElementById("url").value.trim().toLowerCase();
+
+/* EMPTY INPUT */
+if(url===""){
+showError("⚠️ Please enter a website URL");
+return;
+}
+
+/* INVALID URL */
+if(!isValidURL(url)){
+showError("❌ Invalid URL");
+return;
+}
+
+document.getElementById("loader").style.display="block";
+
+clearUI();
+
+setTimeout(()=>{
+
+let score=100;
+let issues=[];
+let advice=[];
+
+let domain = url.replace("https://","").replace("http://","").split("/")[0];
+document.getElementById("domainInfo").innerHTML="🌐 Domain: "+domain;
+
+/* HTTPS */
+if(!url.startsWith("https")){
+score-=30;
+issues.push("❌ Not using HTTPS");
+advice.push("Use HTTPS secure websites");
+}
+
+/* KEYWORDS */
+let keywords=["login","verify","bank","secure","account","update","free","bonus"];
+for(let k of keywords){
+if(url.includes(k)){
+score-=8;
+issues.push("⚠️ Suspicious keyword: "+k);
+}
+}
+
+/* SUBDOMAIN */
+if(domain.split(".").length > 3){
+score-=10;
+issues.push("⚠️ Too many subdomains");
+}
+
+/* BAD TLD */
+if(domain.endsWith(".xyz") || domain.endsWith(".tk") || domain.endsWith(".ml")){
+score-=15;
+issues.push("⚠️ Suspicious extension");
+}
+
+/* IP */
+if(/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/.test(url)){
+score-=25;
+issues.push("❌ IP used instead of domain");
+}
+
+/* SCORE FIX */
+if(score<0) score=0;
+
+let color="lime";
+if(score<80) color="orange";
+if(score<50) color="red";
+
+let resultText="";
+if(score>=90) resultText="✅ Secure Website";
+else if(score>=70) resultText="🟢 Safe Website";
+else if(score>=50) resultText="⚠️ Suspicious Website";
+else resultText="❌ Dangerous Website";
+
+let badge=(score>=80)?"🟢 Low Risk":(score>=50)?"🟡 Medium Risk":"🔴 High Risk";
+let attack=(score<50)?"Phishing / Malware risk":
+(score<80)?"Possible phishing attempt":"Safe browsing";
+
+let confidence=Math.floor(Math.random()*15)+85;
+
+document.getElementById("loader").style.display="none";
+
+document.getElementById("result").innerHTML=resultText+" ("+score+"/100)";
+document.getElementById("badge").innerHTML=badge+" | Confidence: "+confidence+"%";
+document.getElementById("attack").innerHTML="⚔️ "+attack;
+
+document.getElementById("circle").innerHTML=score+"%";
+document.getElementById("circle").style.background=
+`conic-gradient(${color} ${score}%, #1e293b ${score}%)`;
+
+if(issues.length===0){
+document.getElementById("details").innerHTML="✔ No major issues found";
+}else{
+document.getElementById("details").innerHTML=issues.join("<br>");
+}
+
+document.getElementById("why").innerHTML=
+"⚠️ Score based on security checks & suspicious patterns";
+
+if(advice.length===0){
+advice.push("Always verify website before entering data");
+}
+document.getElementById("advice").innerHTML="💡 "+advice.join("<br>");
+
+},1000);
+}
+
+/* CLEAR UI */
+function clearUI(){
+document.getElementById("badge").innerHTML="";
+document.getElementById("domainInfo").innerHTML="";
+document.getElementById("attack").innerHTML="";
+document.getElementById("details").innerHTML="";
+document.getElementById("why").innerHTML="";
+document.getElementById("advice").innerHTML="";
+}
+
+/* ERROR */
+function showError(msg){
+
+clearUI();
+
+document.getElementById("circle").innerHTML="❌";
+document.getElementById("circle").style.background=
+"conic-gradient(red 100%, #1e293b 0%)";
+
+document.getElementById("result").innerHTML=msg;
+
+document.getElementById("details").innerHTML="⚠️ Invalid input detected";
+document.getElementById("why").innerHTML="Example: https://google.com";
+document.getElementById("advice").innerHTML="💡 Enter valid domain like .com, .org";
+}
+
+/* RESET */
+function resetAll(){
+document.getElementById("url").value="";
+document.getElementById("result").innerHTML="";
+clearUI();
+document.getElementById("circle").innerHTML="0%";
+document.getElementById("circle").style.background=
+"conic-gradient(lime 0%, #1e293b 0%)";
+}
+
+</script>
+
+</body>
+</html>

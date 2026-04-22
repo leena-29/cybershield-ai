@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fake Domain Detector</title>
+
+<style>
+body{
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right,#0f172a,#020617);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    width:400px;
+    padding:25px;
+    border-radius:20px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(15px);
+    box-shadow:0 0 30px rgba(0,0,0,0.5);
+}
+
+.top{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.back{
+    cursor:pointer;
+    font-size:22px;
+    padding:6px 10px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.1);
+}
+
+h2{
+    text-align:center;
+    flex:1;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    border-radius:12px;
+    border:none;
+    margin:15px 0;
+    font-size:15px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    margin:5px 0;
+    background:linear-gradient(to right,#3b82f6,#06b6d4);
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.circle{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    margin:20px auto;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:bold;
+    font-size:20px;
+    background:#1e293b;
+}
+
+.result{
+    text-align:center;
+    margin-top:10px;
+}
+
+.tabs{
+    display:flex;
+    justify-content:space-around;
+    margin-top:20px;
+}
+
+.tabs div{
+    cursor:pointer;
+    padding-bottom:5px;
+}
+
+.active{
+    border-bottom:2px solid #3b82f6;
+}
+
+.content{
+    margin-top:10px;
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="top">
+    <div class="back" onclick="history.back()">←</div>
+    <h2>Fake Domain Detector</h2>
+</div>
+
+<input id="domain" placeholder="Enter domain (example: google.com)">
+
+<button onclick="analyze()">Check Domain</button>
+<button onclick="reset()">Reset</button>
+
+<div class="circle" id="score">0%</div>
+
+<div class="result" id="result"></div>
+
+<div class="tabs">
+    <div onclick="showTab('summary')" class="active" id="t1">Summary</div>
+    <div onclick="showTab('details')" id="t2">Details</div>
+    <div onclick="showTab('advice')" id="t3">Advice</div>
+</div>
+
+<div class="content" id="content"></div>
+
+</div>
+
+<script>
+
+function analyze(){
+
+let domain = document.getElementById("domain").value.trim();
+let score = 100;
+let issues = [];
+
+// empty input
+if(domain === ""){
+    document.getElementById("result").innerHTML = "❌ Enter domain first";
+    document.getElementById("score").innerHTML = "0%";
+    return;
+}
+
+// remove https
+domain = domain.replace("https://","").replace("http://","");
+
+// invalid format
+if(!domain.includes(".")){
+    document.getElementById("result").innerHTML = "❌ Invalid Domain";
+    document.getElementById("score").innerHTML = "0%";
+    return;
+}
+
+// checks
+if(domain.length > 20){
+    score -= 20;
+    issues.push("Long domain name");
+}
+
+if(/[0-9]/.test(domain)){
+    score -= 15;
+    issues.push("Contains numbers");
+}
+
+if(domain.includes("-")){
+    score -= 10;
+    issues.push("Contains hyphen");
+}
+
+// suspicious TLD
+if(domain.endsWith(".xyz") || domain.endsWith(".tk") || domain.endsWith(".ru")){
+    score -= 25;
+    issues.push("Suspicious domain extension");
+}
+
+// fake brand check
+let brands = ["google","facebook","paypal","amazon","bank"];
+for(let b of brands){
+    if(domain.includes(b) && domain !== b+".com"){
+        score -= 30;
+        issues.push("Possible fake brand impersonation");
+    }
+}
+
+// result logic
+let resultText = "";
+let color = "";
+
+if(score >= 80){
+    resultText = "✅ Safe Domain ("+score+"/100)";
+    color = "green";
+}
+else if(score >= 50){
+    resultText = "⚠️ Suspicious Domain ("+score+"/100)";
+    color = "orange";
+}
+else{
+    resultText = "❌ Fake / Dangerous Domain ("+score+"/100)";
+    color = "red";
+}
+
+document.getElementById("score").innerHTML = score+"%";
+document.getElementById("score").style.background = color;
+document.getElementById("result").innerHTML = resultText;
+
+// default tab
+showTab('summary', issues);
+}
+
+function showTab(tab, issues=[]){
+
+let content = document.getElementById("content");
+
+document.getElementById("t1").classList.remove("active");
+document.getElementById("t2").classList.remove("active");
+document.getElementById("t3").classList.remove("active");
+
+if(tab === "summary"){
+    document.getElementById("t1").classList.add("active");
+
+    content.innerHTML = "Detected issues: "+issues.length;
+}
+
+if(tab === "details"){
+    document.getElementById("t2").classList.add("active");
+
+    if(issues.length === 0){
+        content.innerHTML = "No issues found";
+    }else{
+        content.innerHTML = issues.map(i=>"• "+i).join("<br>");
+    }
+}
+
+if(tab === "advice"){
+    document.getElementById("t3").classList.add("active");
+
+    content.innerHTML = `
+    • Always check domain spelling<br>
+    • Avoid clicking unknown links<br>
+    • Verify HTTPS security<br>
+    • Do not trust lookalike domains
+    `;
+}
+}
+
+function reset(){
+    document.getElementById("domain").value = "";
+    document.getElementById("score").innerHTML = "0%";
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("content").innerHTML = "";
+}
+
+</script>
+
+</body>
+</html>
